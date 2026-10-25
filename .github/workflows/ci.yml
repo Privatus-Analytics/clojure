@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ["11", "17", "21"]
+        clojure: ["1.11", "1.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+      - uses: DeLaGuardo/setup-clojure@13.4
+        with:
+          cli: latest
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+          key: deps-${{ hashFiles('deps.edn') }}
+      - name: Tests on Clojure 1.11
+        if: matrix.clojure == '1.11'
+        run: clojure -M:test
+      - name: Tests on Clojure 1.12
+        if: matrix.clojure == '1.12'
+        run: clojure -M:1.12:test
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: DeLaGuardo/setup-clojure@13.4
+        with:
+          cli: latest
+      - run: clojure -M:lint
+      - run: clojure -M:fmt check src test build.clj
+
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: DeLaGuardo/setup-clojure@13.4
+        with:
+          cli: latest
+      - run: clojure -T:build jar
