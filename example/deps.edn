@@ -1,0 +1,8 @@
+;; The conformance example app (Ring + Hiccup). It uses the library from this
+;; repo's own source (the :local/root below), not from Clojars.
+{:paths ["src"]
+ :deps {org.clojure/clojure {:mvn/version "1.12.6"}
+        com.privatusanalytics/privatus-analytics {:local/root ".."}
+        ring/ring-core {:mvn/version "1.13.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.13.0"}
+        hiccup/hiccup {:mvn/version "2.0.0"}}}

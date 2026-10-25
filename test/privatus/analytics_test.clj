@@ -214,3 +214,29 @@
     (is (= "{\"q\":\"a\\\"b\\\\c\\nd\\u0001\"}" (privatus/page-props-json {:q "a\"b\\c\nd\u0001"}))))
   (testing "emoji pass through, a lone surrogate is escaped"
     (is (= "{\"e\":\"😀\",\"s\":\"\\ud800\"}" (privatus/page-props-json (array-map :e "😀" :s "\ud800"))))))
+
+;; --- when the tag is off ------------------------------------------------------
+
+(def stub-only (str "<script nonce=\"abc\">" privatus/queue-stub "</script>"))
+
+(deftest off-with-queue-stub-test
+  (testing "disabled with the stub on prints only the stub, with the nonce"
+    (is (= stub-only
+           (privatus/tag {:site-id "pa_TEST123456" :enabled false :queue-stub true :nonce "abc"}
+                         {:props {:plan "pro"}}))))
+  (testing "no site id with the stub on prints only the stub"
+    (is (= (str "<script>" privatus/queue-stub "</script>")
+           (privatus/tag {:enabled true :queue-stub true :props {:plan "pro"}}))))
+  (testing "outside production by default, with the stub on"
+    (is (= stub-only (privatus/tag {:site-id "pa_TEST123456" :queue-stub true :nonce "abc"}))))
+  (testing "a props function is not called"
+    (let [called (atom false)]
+      (is (= stub-only
+             (privatus/tag {:site-id "pa_TEST123456" :enabled false :queue-stub true :nonce "abc"
+                            :props (fn [_] (reset! called true) {:plan "pro"})})))
+      (is (false? @called)))))
+
+(deftest off-without-queue-stub-test
+  (is (= "" (privatus/tag {:site-id "pa_TEST123456" :enabled false :queue-stub false}
+                          {:props {:plan "pro"}})))
+  (is (= "" (privatus/tag {:enabled true :props {:plan "pro"}}))))

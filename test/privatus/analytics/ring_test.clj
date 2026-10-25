@@ -79,6 +79,7 @@
     (is (= "<p>hi</p>" (:body (run (html-response "<p>hi</p>"))))))
   (testing "disabled, no site id, or auto inject off"
     (is (= page (:body (run {:site-id "pa_TEST123456" :enabled false} (html-response page)))))
+    (is (= page (:body (run {:site-id "pa_TEST123456" :enabled false :queue-stub true} (html-response page)))))
     (is (= page (:body (run {:enabled true} (html-response page)))))
     (is (= page (:body (run (assoc config :auto-inject false) (html-response page)))))))
 

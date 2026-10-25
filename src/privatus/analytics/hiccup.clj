@@ -21,13 +21,14 @@
            (privatus/tag-parts config overrides)]
     (->> [(when stub (inline nonce stub))
           (when props (inline nonce props))
-          [:script (attrs-map attrs)]]
+          (when attrs [:script (attrs-map attrs)])]
          (remove nil?)
          seq)
     nil))
 
 (defn tag
   "The tag as a seq of Hiccup elements, or nil when nothing should print.
+  When the tag is off and :queue-stub is on, only the queue stub element.
   Put it in the head; Hiccup expands the seq:
 
     [:head [:title \"My app\"] (privatus.analytics.hiccup/tag config {:request request})]

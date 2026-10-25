@@ -12,7 +12,11 @@
     (is (= [[:script {:defer true :src "https://privatusstats.com/js/pa.js" :data-site "pa_TEST123456"}]]
            (ph/tag config))))
   (testing "nothing when off"
-    (is (nil? (ph/tag (assoc config :enabled false))))))
+    (is (nil? (ph/tag (assoc config :enabled false)))))
+  (testing "only the queue stub when off with the stub on"
+    (is (= (str "<script nonce=\"n\">" privatus/queue-stub "</script>")
+           (str (h/html (ph/tag (assoc config :enabled false :queue-stub true :nonce "n")
+                                {:props {:plan "pro"}})))))))
 
 (deftest renders-with-hiccup-2
   (let [html (str (h/html [:head (ph/tag config {:props {:plan "pro" :note "</script>"} :nonce "abc"})]))]

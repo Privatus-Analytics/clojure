@@ -331,18 +331,32 @@
 (defn tag-parts
   "The parts of the tag as data, or nil when nothing should print:
   {:queue-stub js-or-nil, :props-script js-or-nil, :nonce str-or-nil,
-   :attrs ordered-map-of-tracker-attributes}."
+   :attrs ordered-map-of-tracker-attributes-or-nil}.
+
+  When the tag is off (not enabled, or no site id) and :queue-stub is on, only
+  {:queue-stub js :nonce str-or-nil} is given (no tracker and no page props;
+  a :props function is not called), so privatus.track calls never fail."
   ([config] (tag-parts config nil))
   ([config overrides]
-   (let [opts (merge config (dissoc overrides :props))]
-     (when (render? opts)
+   (let [opts (merge config (dissoc overrides :props))
+         stub (when (true? (:queue-stub opts)) queue-stub)]
+     (cond
+       (render? opts)
        (let [props-json (page-props-json (page-props config overrides))
              attrs (tracker-attrs config overrides)]
-         {:queue-stub (when (true? (:queue-stub opts)) queue-stub)
+         {:queue-stub stub
           :props-script (when props-json
                           (str "window." props-function "=function(){return " props-json "}"))
           :nonce (some-> (nonce-value opts) text)
-          :attrs (cond-> attrs props-json (assoc "data-props" props-function))})))))
+          :attrs (cond-> attrs props-json (assoc "data-props" props-function))})
+
+       stub
+       {:queue-stub stub
+        :props-script nil
+        :nonce (some-> (nonce-value opts) text)
+        :attrs nil}
+
+       :else nil))))
 
 (defn- inline-script [nonce code]
   (str (if nonce (str "<script nonce=\"" (escape-html nonce) "\">") "<script>") code "</script>"))
@@ -358,7 +372,8 @@
   overrides: any config key, plus :request (passed to a :props function) and
   :props (merged over the configured props; a nil value removes one).
 
-  Gives \"\" without a site id or when the tag is not enabled."
+  Without a site id or when the tag is not enabled, gives only the queue stub
+  script when :queue-stub is on, else \"\"."
   ([] (tag {} nil))
   ([config] (tag config nil))
   ([config overrides]
@@ -368,6 +383,7 @@
        ""
        (->> [(some->> (:queue-stub parts) (inline-script nonce))
              (some->> (:props-script parts) (inline-script nonce))
-             (str "<script " (attrs->html (:attrs parts)) "></script>")]
+             (when-let [attrs (:attrs parts)]
+               (str "<script " (attrs->html attrs) "></script>"))]
             (remove nil?)
             (str/join "\n"))))))

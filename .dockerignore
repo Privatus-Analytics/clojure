@@ -1,0 +1,7 @@
+.git
+.github
+.cache
+.cpcache
+.clj-kondo/.cache
+target
+example/.cpcache
