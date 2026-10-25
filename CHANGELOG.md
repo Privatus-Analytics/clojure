@@ -1,14 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- When the tag is off (not enabled or no site id) and `:queue-stub` is on, `tag`
-  and the Hiccup `tag` print only the queue stub, so `privatus.track` calls never
-  fail. No tracker and no page props script print then, and a `:props` function is
-  not called. `tag-parts` gives `:attrs nil` in that case.
-- Add the conformance example app in `example/` (Ring and Hiccup).
-- README: a privacy policy paragraph you can paste.
-
 ## 1.0.0 - 2026-10-25
 
 - Initial release.
@@ -23,3 +14,9 @@
 - `privatus.analytics.ring/wrap-privatus-analytics` adds the tag to the head of
   HTML responses and fixes `Content-Length`.
 - The tag prints only when `PRIVATUS_ENV` is `production`, unless `:enabled` says otherwise.
+- When the tag is off (not enabled or no site id) and `:queue-stub` is on, `tag`
+  and the Hiccup `tag` print only the queue stub, so `privatus.track` calls never
+  fail. No tracker and no page props script print then, and a `:props` function is
+  not called. `tag-parts` gives `:attrs nil` in that case.
+- Add the conformance example app in `example/` (Ring and Hiccup).
+- README: a privacy policy paragraph you can paste.
