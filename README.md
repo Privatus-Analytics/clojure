@@ -47,13 +47,13 @@ free plan. [Sign up at privatusanalytics.com](https://privatusanalytics.com).
 Add the library to your `deps.edn`:
 
 ```clojure
-com.privatusanalytics/privatus-analytics {:mvn/version "1.0.0"}
+com.privatusanalytics/privatus-analytics {:mvn/version "1.0.1"}
 ```
 
 or with Leiningen, to `project.clj`:
 
 ```clojure
-[com.privatusanalytics/privatus-analytics "1.0.0"]
+[com.privatusanalytics/privatus-analytics "1.0.1"]
 ```
 
 For the full setup guide and every tracker option, see the [Privatus Analytics
@@ -484,7 +484,7 @@ format check, and the jar build. Without Docker:
 clojure -M:test              # tests
 clojure -M:lint              # clj-kondo
 clojure -M:fmt check         # cljfmt (use fix to format)
-clojure -T:build jar         # builds target/privatus-analytics-1.0.0.jar
+clojure -T:build jar         # builds target/privatus-analytics-1.0.1.jar
 ```
 
 ## Contributing

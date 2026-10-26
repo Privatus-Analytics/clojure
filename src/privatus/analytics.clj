@@ -8,7 +8,7 @@
 
 (set! *warn-on-reflection* true)
 
-(def version "1.0.0")
+(def version "1.0.1")
 
 (def default-script-host "https://privatusstats.com")
 
